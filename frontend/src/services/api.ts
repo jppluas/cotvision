@@ -9,26 +9,22 @@ export async function sendImage(
   const formData = new FormData()
   formData.append('image', image)
 
-  // MOCK TEMPORAL
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        class: 'Bacterial Blight',
-        confidence: 0.91,
-        model_used: 'KAN',
-        inference_time_ms: 143,
-        probabilities: {
-          'Bacterial Blight': 0.91,
-          'Powdery Mildew': 0.04,
-          Aphids: 0.03,
-          Healthy: 0.02,
-        },
-        heatmap_url: null,
-        recommendations: [
-          'Aplicar tratamiento localizado',
-          'Evitar exceso de riego',
-        ],
-      })
-    }, 1200)
+  const response = await axios.post(`${API_URL}/predict`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   })
+
+  // Adaptamos el contrato del backend al frontend
+  return {
+    class: response.data.class_name,
+    confidence: response.data.confidence,
+    model_used: response.data.model_used,
+    inference_time_ms: response.data.inference_time_ms,
+    probabilities: response.data.probabilities,
+    heatmap_url: response.data.heatmap_url,
+    recommendations: response.data.recommendations,
+  }
 }
+
+
